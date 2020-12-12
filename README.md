@@ -15,6 +15,28 @@ This process is manual, strenous, time-consuming and not dynamic.
 
 The proposed method in the ExpertSearchCrawler is to automate many of these tasks.
 
+## Setup
+~~~~
+# Install scrapy
+pip install scrapy
+
+# Creating Conda environment
+conda env create -f env.yml
+# Activating the environment
+conda activate BioPageClassifier
+
+# Downloading NLTK Corpora
+python -m nltk.downloader all
+# Downloading spaCY model
+python -m spacy download en_core_web_sm
+
+wget https://drive.google.com/file/d/1NShUBtE248LN_L1zzyGbK__4I60bkk0R/view?usp=sharing
+[ ! -d "bio-model" ] && unzip bio-model.zip 
+
+# Execute the webcrawler
+scrapy crawl faculty_pages_filtered
+~~~~
+
 ## The Strategy
 
 The ExpertSearchCrawler works in conjunction with the BioPageClassifier (link).
