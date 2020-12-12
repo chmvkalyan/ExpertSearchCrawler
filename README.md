@@ -21,14 +21,75 @@ The ExpertSearchCrawler works in conjunction with the BioPageClassifier (link).
 It uses a webcrawler that crawls the webpages and downloads relevant faculty bio pages at regular intervals of time.
 
 ### Steps
-- 1. Start crawling on a initial set of university webpages (this can be updated from wikipedia (link))
-- 2. For each university fetch the main page and corresponding links
-- 3. Exclude those link which may not direct to the faculty pages. This is done heuristically by using several university websites as reference.
-- 4. For each link, fetch the content and classify wheter Bio page or not using BioPageClassifier. Save bio page
-- 5. Fetch links from this page and continue as step 2 recursively
+1. Start crawling on a initial set of university webpages (this can be updated from wikipedia (link))
+2. For each university fetch the main page and corresponding links
+3. Exclude those link which may not direct to the faculty pages. This is done heuristically by using several university websites as reference.
+4. For each link, fetch the content and classify wheter Bio page or not using BioPageClassifier. Save bio page
+5. Fetch links from this page and continue as step 2 recursively
+
+![alt text](https://docs.scrapy.org/en/latest/_images/scrapy_architecture_02.png)
 
 Note: The Breadth First Search approach is used to get relevant pages asap without going too deep into unfruitful links.
 Note: The webcrawler is set to explore only links upto 5 levels from the main page
 
 Both these are customizable based on settings in the webcrawler
+
+## The Tools
+The webcrawler is created by subclassing a Scrapy spider. Then several customizations are added to aid additional functionality specific to ExpertSearchCrawler.
+
+### Scrapy
+Scrapy is a fast high-level web crawling and web scraping framework, used to crawl websites and extract structured data from their pages. It can be used for a wide range of purposes, from data mining to monitoring and automated testing.
+
+### Tree
+This is being used to get the website structure. It also allows to traverse a link only once and not repeat it.
+
+## The Crawler
+
+~~~~
+def parse(self, response):
+        
+        domain = self.allowed_domains[0].split('.')[-2]
+        folder_name = 'filtered_data/'+domain + '_files'
+
+        self.record[domain] = self.record.get(domain, 0) + 1
+        
+
+        if self.record[domain]%1000 == 0:
+            print('\n','-'*40, self.record[domain])
+            self.tree.save2file(folder_name+"/00__"+str(self.record[domain])+"_tree.txt")
+
+        isBio = self.bio_identifier.is_bio_html_content(response.xpath('//*').get())
+        
+        if isBio:
+            text = BeautifulSoup(response.xpath('//*').get(), features="html.parser").get_text()
+            tokens = nltk.word_tokenize(text)
+            normalized_text = ' '.join([word for word in tokens if word.isalnum()])
+            normalized_text += '\n'+response.url
+            
+            hash_text = hashlib.md5(response.url.encode()) 
+            file_name = hash_text.hexdigest()
+
+            with open(folder_name+"/"+file_name+".txt", "w") as file:
+                file.write(normalized_text)
+                
+        
+        AllLinks = LinkExtractor(allow_domains = self.allowed_domains[0], unique=True).extract_links(response)
+
+        for n, link in enumerate(AllLinks):
+            if not any([x in link.url for x in self.exclude_words]):
+                if self.tree.get_node(link.url) == None:
+                    referer = response.request.headers.get('Referer', None)
+
+                    if referer == None:
+                        self.tree.create_node(link.url, link.url, parent='root')
+                    else:
+                        referer = referer.decode("utf-8")
+                        if self.tree.contains(referer):
+
+                            self.tree.create_node(link.url, link.url, parent=referer)
+                        else:
+                            self.tree.create_node(link.url, link.url, parent='unknown')
+
+                    yield scrapy.Request(url=link.url, callback = self.parse)
+~~~~
 
