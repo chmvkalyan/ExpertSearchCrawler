@@ -39,13 +39,6 @@ scrapy crawl faculty_pages_filtered
 
 This should create a folder called filtered_data within which there would be different folders for the bio pages of faculties in different universities.
 
-There are also known warning and error messages as shown in the figure.
-![error](https://github.com/chmvkalyan/ExpertSearchCrawler/blob/develop/images/error.png)
-
-### Reasons
-1. unicode error - this has to do with the file containing some characters that the os rejects to save
-2. file not found 404 error - Some links are bad and the crawler cannot reach the page
-
 ## The Strategy
 
 The ExpertSearchCrawler works in conjunction with the BioPageClassifier (link).
@@ -129,3 +122,10 @@ if self.record[domain]%1000 == 0:
     self.tree.save2file(folder_name+"/00__"+str(self.record[domain])+"_tree.txt")
 ~~~~
 
+## Errors
+There are also known warning and error messages as shown in the figure.
+![error](https://github.com/chmvkalyan/ExpertSearchCrawler/blob/develop/images/error.png)
+
+### Reasons
+1. unicode error - this has to do with the file containing some characters that the os rejects to save
+2. file not found 404 error - Some links are bad and the crawler cannot reach the page
