@@ -45,51 +45,56 @@ This is being used to get the website structure. It also allows to traverse a li
 
 ## The Crawler
 
+The key code within the webcrawler is the **parse** function whose relevant contents are given below:
+
+
+#### Classify BioPage by passing the html content to the  Classifier
 ~~~~
-def parse(self, response):
+isBio = self.bio_identifier.is_bio_html_content(response.xpath('//*').get())
+
+if isBio:
+    text = BeautifulSoup(response.xpath('//*').get(), features="html.parser").get_text()
+    tokens = nltk.word_tokenize(text)
+    normalized_text = ' '.join([word for word in tokens if word.isalnum()])
+    normalized_text += '\n'+response.url
+
+    hash_text = hashlib.md5(response.url.encode()) 
+    file_name = hash_text.hexdigest()
+
+    with open(folder_name+"/"+file_name+".txt", "w") as file:
+        file.write(normalized_text)
         
-        domain = self.allowed_domains[0].split('.')[-2]
-        folder_name = 'filtered_data/'+domain + '_files'
+~~~~
 
-        self.record[domain] = self.record.get(domain, 0) + 1
-        
+#### Extract all links uniquely and filter using exclude words
+~~~~
+AllLinks = LinkExtractor(allow_domains = self.allowed_domains[0], unique=True).extract_links(response)
 
-        if self.record[domain]%1000 == 0:
-            print('\n','-'*40, self.record[domain])
-            self.tree.save2file(folder_name+"/00__"+str(self.record[domain])+"_tree.txt")
+for n, link in enumerate(AllLinks):
+    if not any([x in link.url for x in self.exclude_words]):
+        if self.tree.get_node(link.url) == None:
+            referer = response.request.headers.get('Referer', None)
 
-        isBio = self.bio_identifier.is_bio_html_content(response.xpath('//*').get())
-        
-        if isBio:
-            text = BeautifulSoup(response.xpath('//*').get(), features="html.parser").get_text()
-            tokens = nltk.word_tokenize(text)
-            normalized_text = ' '.join([word for word in tokens if word.isalnum()])
-            normalized_text += '\n'+response.url
-            
-            hash_text = hashlib.md5(response.url.encode()) 
-            file_name = hash_text.hexdigest()
+            if referer == None:
+                self.tree.create_node(link.url, link.url, parent='root')
+            else:
+                referer = referer.decode("utf-8")
+                if self.tree.contains(referer):
 
-            with open(folder_name+"/"+file_name+".txt", "w") as file:
-                file.write(normalized_text)
-                
-        
-        AllLinks = LinkExtractor(allow_domains = self.allowed_domains[0], unique=True).extract_links(response)
+                    self.tree.create_node(link.url, link.url, parent=referer)
+                else:
+                    self.tree.create_node(link.url, link.url, parent='unknown')
 
-        for n, link in enumerate(AllLinks):
-            if not any([x in link.url for x in self.exclude_words]):
-                if self.tree.get_node(link.url) == None:
-                    referer = response.request.headers.get('Referer', None)
+~~~~
+#### Only add in queue those links that are filtered, not traversed before
+~~~~
+            yield scrapy.Request(url=link.url, callback = self.parse)
+~~~~
 
-                    if referer == None:
-                        self.tree.create_node(link.url, link.url, parent='root')
-                    else:
-                        referer = referer.decode("utf-8")
-                        if self.tree.contains(referer):
-
-                            self.tree.create_node(link.url, link.url, parent=referer)
-                        else:
-                            self.tree.create_node(link.url, link.url, parent='unknown')
-
-                    yield scrapy.Request(url=link.url, callback = self.parse)
+#### Save the tree every 1000 iterations
+~~~~
+if self.record[domain]%1000 == 0:
+    print('\n','-'*40, self.record[domain])
+    self.tree.save2file(folder_name+"/00__"+str(self.record[domain])+"_tree.txt")
 ~~~~
 
