@@ -130,3 +130,5 @@ There are also known warning and error messages as shown in the picture. They oc
 1. Unicode error - this has to do with the file containing some characters that the os rejects to save
 2. File not found 404 error - Some links are bad and the crawler cannot reach the page
 3. Error when it tries to scrape the embedded file objects along with web pages.
+
+### Successful Extraction of Faculty Biopages and URL Tree
