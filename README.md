@@ -37,6 +37,8 @@ wget https://drive.google.com/file/d/1NShUBtE248LN_L1zzyGbK__4I60bkk0R/view?usp=
 scrapy crawl faculty_pages_filtered
 ~~~~
 
+This should create a folder called filtered_data within which there would be different folders for the bio pages of faculties in different universities.
+
 ## The Strategy
 
 The ExpertSearchCrawler works in conjunction with the BioPageClassifier (link).
@@ -49,7 +51,7 @@ It uses a webcrawler that crawls the webpages and downloads relevant faculty bio
 4. For each link, fetch the content and classify wheter Bio page or not using BioPageClassifier. Save bio page
 5. Fetch links from this page and continue as step 2 recursively
 
-![alt text](https://docs.scrapy.org/en/latest/_images/scrapy_architecture_02.png)
+![scrapy](https://docs.scrapy.org/en/latest/_images/scrapy_architecture_02.png)
 
 Note: The Breadth First Search approach is used to get relevant pages asap without going too deep into unfruitful links.
 Note: The webcrawler is set to explore only links upto 5 levels from the main page
@@ -120,3 +122,10 @@ if self.record[domain]%1000 == 0:
     self.tree.save2file(folder_name+"/00__"+str(self.record[domain])+"_tree.txt")
 ~~~~
 
+## Errors
+There are also known warning and error messages as shown in the figure.
+![error](https://github.com/chmvkalyan/ExpertSearchCrawler/blob/develop/images/error.png)
+
+### Reasons
+1. unicode error - this has to do with the file containing some characters that the os rejects to save
+2. file not found 404 error - Some links are bad and the crawler cannot reach the page
