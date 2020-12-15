@@ -79,7 +79,7 @@ class FacultyPagesFilteredSpider(scrapy.Spider):
 
             self.record[domain] = self.record.get(domain, 0) + 1
             
-            if self.record[domain]%1000 == 0:
+            if self.record[domain]%50 == 0:
                 print('\n Crawled {} Bio-pages of {} University ...'.format(self.record[domain], domain.capitalize()))
                 self.tree.save2file(folder_name+"/00__"+str(self.record[domain])+"_tree.txt")
 
