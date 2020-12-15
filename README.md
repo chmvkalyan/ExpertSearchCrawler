@@ -1,9 +1,9 @@
-# ExpertSearchCrawler
+# ExpertSearch - Automated Crawler
 
-The purpose of this code is to improve upon the data collection for the ExpertSearch project (link). 
+The purpose of automated crawler is to improve upon the data collection for the ExpertSearch project (link). 
 
 ## Improvement
-In the ExpertSearch project the database is collected manually as follows:
+In the existing ExpertSearch project the database is collected manually as follows:
 
 - Go to university's website
 - Go to department's webpage
@@ -13,7 +13,7 @@ In the ExpertSearch project the database is collected manually as follows:
 
 This process is manual, strenous, time-consuming and not dynamic.
 
-The proposed method in the ExpertSearchCrawler is to automate many of these tasks.
+The proposed method is to automate these tasks in the ExpertSearch System.
 
 ## Setup
 ~~~~
@@ -41,30 +41,30 @@ This should create a folder called filtered_data within which there would be dif
 
 ## The Strategy
 
-The ExpertSearchCrawler works in conjunction with the BioPageClassifier (link).
+The Automated Crawler works in conjunction with the BioPageClassifier (link).
 It uses a webcrawler that crawls the webpages and downloads relevant faculty bio pages at regular intervals of time.
 
 ### Steps
-1. Start crawling on a initial set of university webpages (this can be updated from wikipedia (link))
-2. For each university fetch the main page and corresponding links
+1. Start crawling on a initial set of university webpages (this can be updated from wikipedia (link)).
+2. For each university fetch the main page and corresponding links.
 3. Exclude those link which may not direct to the faculty pages. This is done heuristically by using several university websites as reference.
-4. For each link, fetch the content and classify wheter Bio page or not using BioPageClassifier. Save bio page
-5. Fetch links from this page and continue as step 2 recursively
+4. For each link, fetch the content and classify wheter Bio page or not using BioPageClassifier. Save bio page.
+5. Fetch links from this page and continue as step 2 recursively.
 
 ![scrapy](https://docs.scrapy.org/en/latest/_images/scrapy_architecture_02.png)
 
-Note: The Breadth First Search approach is used to get relevant pages asap without going too deep into unfruitful links.
-Note: The webcrawler is set to explore only links upto 5 levels from the main page
+Note: The Breadth First Search approach is used to get relevant pages as soon as possible without going too deep into unfruitful links.
+Note: The webcrawler is set to explore only links upto 5 levels from the main page. 
 
-Both these are customizable based on settings in the webcrawler
+Both these are customizable based on settings in the webcrawler.
 
 ## The Tools
-The webcrawler is created by subclassing a Scrapy spider. Then several customizations are added to aid additional functionality specific to ExpertSearchCrawler.
+The webcrawler is created by subclassing a Scrapy spider. Then several customizations are added to aid additional functionality specific to Automated Crawler.
 
 ### Scrapy
 Scrapy is a fast high-level web crawling and web scraping framework, used to crawl websites and extract structured data from their pages. It can be used for a wide range of purposes, from data mining to monitoring and automated testing.
 
-### Tree
+### URL Tree
 This is being used to get the website structure. It also allows to traverse a link only once and not repeat it.
 
 ## The Crawler
@@ -115,17 +115,18 @@ for n, link in enumerate(AllLinks):
             yield scrapy.Request(url=link.url, callback = self.parse)
 ~~~~
 
-#### Save the tree every 1000 iterations
+#### Save the URL Tree every 1000 iterations
 ~~~~
 if self.record[domain]%1000 == 0:
     print('\n','-'*40, self.record[domain])
     self.tree.save2file(folder_name+"/00__"+str(self.record[domain])+"_tree.txt")
 ~~~~
 
-## Errors
-There are also known warning and error messages as shown in the figure.
+## Some Harmless Errors/Warnings
+There are also known warning and error messages as shown in the picture. They occur because of the below mentioned reasons. These errors/warning can be ignored as they won't stop the Crawler execution.
 ![error](https://github.com/chmvkalyan/ExpertSearchCrawler/blob/develop/images/error.png)
 
 ### Reasons
-1. unicode error - this has to do with the file containing some characters that the os rejects to save
-2. file not found 404 error - Some links are bad and the crawler cannot reach the page
+1. Unicode error - this has to do with the file containing some characters that the os rejects to save
+2. File not found 404 error - Some links are bad and the crawler cannot reach the page
+3. Error when it tries to scrape the embedded file objects along with web pages.
