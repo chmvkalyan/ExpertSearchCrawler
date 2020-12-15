@@ -1,3 +1,5 @@
+#  -*- coding: utf-8 -*-
+
 # import required packages
 import scrapy
 from scrapy.linkextractors import LinkExtractor
@@ -14,21 +16,19 @@ from utils import *
 
 class FacultyPagesFilteredSpider(scrapy.Spider):
     name = 'faculty_pages_filtered'
-    allowed_domains = ['stanford.edu']
-                      # ['cmu.edu']
-                      # ['cornell.edu', 'washington.edu',
-                      # 'gatech.edu', 'princeton.edu', 'utexas.edu',
-                      #, 'berkeley.edu','illinois.edu']
-                      #, 'mit.edu', 'stanford.edu'
+    allowed_domains = ['cmu.edu',
+                       'cornell.edu', 'washington.edu',
+                       'gatech.edu', 'princeton.edu', 'utexas.edu',
+                       'illinois.edu','berkeley.edu'
+                       'mit.edu', 'stanford.edu']
     count = 0
     record = {}
-    start_urls = ['https://www.stanford.edu/'] 
-                  #[https://www.cmu.edu/']
-                  #['https://www.cornell.edu/',
-                  #'https://www.washington.edu/', 'https://www.gatech.edu/',
-                  #'https://www.princeton.edu/', 'https://www.utexas.edu/',
-                  #'https://illinois.edu/', 'https://www.berkeley.edu/']
-                  # 'https://www.mit.edu/', 'https://www.stanford.edu/'
+    start_urls =  ['https://www.cmu.edu/',
+                  'https://www.cornell.edu/',
+                  'https://www.washington.edu/', 'https://www.gatech.edu/',
+                  'https://www.princeton.edu/', 'https://www.utexas.edu/',
+                  'https://illinois.edu/', 'https://www.berkeley.edu/',
+                  'https://www.mit.edu/', 'https://www.stanford.edu/']
 
     exclude_words = ['news', 'events', 'publications', 'pub', 'gallery', 
                      'category', 'courses', 'students', 'references', 
@@ -61,57 +61,59 @@ class FacultyPagesFilteredSpider(scrapy.Spider):
 
         for dom in self.allowed_domains:
             domain = dom.split('.')[0]
-            if not os.path.exists('filtered_data'):
-                os.makedirs('filtered_data')
+            if not os.path.exists('Crawled_Data'):
+                os.makedirs('Crawled_Data')
 
-            folder_name = 'filtered_data/'+domain + '_files'
+            folder_name = 'Crawled_Data/'+domain.capitalize() + '_University_Files'
             self.record[domain] = 0
             if not os.path.exists(folder_name):
                 os.makedirs(folder_name)
 
     def parse(self, response):
         
-        domain = self.allowed_domains[0].split('.')[-2]
-        folder_name = 'filtered_data/'+domain + '_files'
-
-        self.record[domain] = self.record.get(domain, 0) + 1
-        
-
-        if self.record[domain]%1000 == 0:
-            print('\n','-'*40, self.record[domain])
-            self.tree.save2file(folder_name+"/00__"+str(self.record[domain])+"_tree.txt")
-
-        isBio = self.bio_identifier.is_bio_html_content(response.xpath('//*').get())
-        
-        if isBio:
-            text = BeautifulSoup(response.xpath('//*').get(), features="html.parser").get_text()
-            tokens = nltk.word_tokenize(text)
-            normalized_text = ' '.join([word for word in tokens if word.isalnum()])
-            normalized_text += '\n'+response.url
+        matched_domain = [x for x in self.allowed_domains if x in response.url]
+        if len(matched_domain) > 0:
+            domain = matched_domain[0].split('.')[0]
             
-            hash_text = hashlib.md5(response.url.encode()) 
-            file_name = hash_text.hexdigest()
+            folder_name = 'Crawled_Data/'+domain.capitalize() + '_University_Files'
 
-            with open(folder_name+"/"+file_name+".txt", "w") as file:
-                file.write(normalized_text)
+            self.record[domain] = self.record.get(domain, 0) + 1
+            
+            if self.record[domain]%1000 == 0:
+                print('\n Crawled {} Bio-pages of {} University ...'.format(self.record[domain], domain.capitalize()))
+                self.tree.save2file(folder_name+"/00__"+str(self.record[domain])+"_tree.txt")
+
+            isBio = self.bio_identifier.is_bio_html_content(response.xpath('//*').get())
+            
+            if isBio:
+                text = BeautifulSoup(response.xpath('//*').get(), features="html.parser").get_text()
+                tokens = nltk.word_tokenize(text)
+                normalized_text = ' '.join([word for word in tokens if word.isalnum()])
+                normalized_text += '\n'+response.url
                 
-        
-        AllLinks = LinkExtractor(allow_domains = self.allowed_domains[0], unique=True).extract_links(response)
+                hash_text = hashlib.md5(response.url.encode()) 
+                file_name = hash_text.hexdigest()
 
-        for n, link in enumerate(AllLinks):
-            if not any([x in link.url for x in self.exclude_words]):
-                if self.tree.get_node(link.url) == None:
-                    referer = response.request.headers.get('Referer', None)
+                with open(folder_name+"/"+file_name+".txt", "w", encoding="utf-8") as file:
+                    file.write(normalized_text)
+                    
+            
+            AllLinks = LinkExtractor(allow_domains = domain+'.edu', unique=True).extract_links(response)
 
-                    if referer == None:
-                        self.tree.create_node(link.url, link.url, parent='root')
-                    else:
-                        referer = referer.decode("utf-8")
-                        if self.tree.contains(referer):
+            for n, link in enumerate(AllLinks):
+                if not any([x in link.url for x in self.exclude_words]):
+                    if self.tree.get_node(link.url) == None:
+                        referer = response.request.headers.get('Referer', None)
 
-                            self.tree.create_node(link.url, link.url, parent=referer)
+                        if referer == None:
+                            self.tree.create_node(link.url, link.url, parent='root')
                         else:
-                            self.tree.create_node(link.url, link.url, parent='unknown')
+                            referer = referer.decode("utf-8")
+                            if self.tree.contains(referer):
 
-                    yield scrapy.Request(url=link.url, callback = self.parse)
+                                self.tree.create_node(link.url, link.url, parent=referer)
+                            else:
+                                self.tree.create_node(link.url, link.url, parent='unknown')
+
+                        yield scrapy.Request(url=link.url, callback = self.parse)
 
