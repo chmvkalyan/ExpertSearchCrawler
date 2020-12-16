@@ -124,29 +124,29 @@ if self.record[domain]%50 == 0:
 
 ## Some Harmless Errors/Warnings
 You may face some warning or error messages in very rare cases. However, they won't interrupt the crawler execution flow. They occur because of the below mentioned reasons.
-
 #### Reasons
 1. File not found 404 error - Some links are bad and the crawler cannot reach the page.
 2. Error when it tries to scrape the file objects embedded/linked to the web pages.
 
 ## Successful Execution
 
-**Screenshot depicting the Execution log of Crawler**
+**Screenshot depicting the Execution log of Crawler:**
 ![cmd](https://github.com/chmvkalyan/ExpertSearchCrawler/blob/develop/images/Crawler_Execution_Log.jpg)
 
 
-**Screenshot depicting the Extraction Bio-pages to Output Folder**
+**Screenshot depicting the Extraction of Bio-pages to Output Folder:**
 ![output](https://github.com/chmvkalyan/ExpertSearchCrawler/blob/develop/images/Bio_Page_Extraction_To_OutputFolder.jpg)
 
 
-**Screenshot depicting the Faculty Directory Page URL of Stanford University in URL Tree**
+**Screenshot depicting the Faculty Directory Page URL of Stanford University in URL Tree:**
 ![DirPage](https://github.com/chmvkalyan/ExpertSearchCrawler/blob/develop/images/Faculty_Directory_Page_on_URL_Tree.jpg)
 
 
-**Screenshot depicting the Faculty Bio-page URLs of Stanford University in URL Tree**
+**Screenshot depicting the Faculty Bio-page URLs of Stanford University in URL Tree:**
 ![BioPage](https://github.com/chmvkalyan/ExpertSearchCrawler/blob/develop/images/Faculty_Bio_Page_URLs_from_Stanford_University.jpg)
 
 
-**Please look into the below folder to see the URL Tree and successfully crawled Bio-pages by our Automated Crawler from Stanford University**
-                                          
+#### Link to the URL Tree and Faculty Bio-pages Crawled from Stanford University as a sample:
 https://github.com/chmvkalyan/ExpertSearchCrawler/tree/develop/Crawled_Bio_Data
+
+Please contact cheerla3@illinois.edu for live demo or in case of any question.
