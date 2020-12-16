@@ -130,3 +130,13 @@ There are also known warning and error messages as shown in the picture. They oc
 1. Unicode error - this has to do with the file containing some characters that the os rejects to save
 2. File not found 404 error - Some links are bad and the crawler cannot reach the page
 3. Error when it tries to scrape the embedded file objects along with web pages.
+
+## Successful Execution
+
+![cmd](https://github.com/chmvkalyan/ExpertSearchCrawler/blob/develop/images/Crawler_Execution_Log.jpg)
+
+![output](https://github.com/chmvkalyan/ExpertSearchCrawler/blob/develop/images/Bio_Page_Extraction_To_OutputFolder.jpg)
+
+![DirPage](https://github.com/chmvkalyan/ExpertSearchCrawler/blob/develop/images/Faculty_Directory_Page_on_URL_Tree.jpg)
+
+![BioPage](https://github.com/chmvkalyan/ExpertSearchCrawler/blob/develop/images/Faculty_Bio_Page_URLs_from_Stanford_University.jpg)
