@@ -149,4 +149,5 @@ You may face some warning or error messages in very rare cases. However, they wo
 #### Link to the URL Tree and Faculty Bio-pages Crawled from Stanford University as a sample:
 https://github.com/chmvkalyan/ExpertSearchCrawler/tree/develop/Crawled_Bio_Data
 
-Please contact cheerla3@illinois.edu for live demo or in case of any question.
+
+Please contact cheerla3@illinois.edu for live demo or in case of any question. Thank you!!
