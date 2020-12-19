@@ -115,18 +115,39 @@ for n, link in enumerate(AllLinks):
             yield scrapy.Request(url=link.url, callback = self.parse)
 ~~~~
 
-#### Save the URL Tree every 1000 iterations
+#### Save the URL Tree every 50 iterations
 ~~~~
-if self.record[domain]%1000 == 0:
-    print('\n','-'*40, self.record[domain])
-    self.tree.save2file(folder_name+"/00__"+str(self.record[domain])+"_tree.txt")
+if self.record[domain]%50 == 0:
+   print('\n Crawled {} Bio-pages of {} University ...'.format(self.record[domain], domain.capitalize()))
+   self.tree.save2file(folder_name+"/00__"+str(self.record[domain])+"_tree.txt")             
 ~~~~
 
 ## Some Harmless Errors/Warnings
-There are also known warning and error messages as shown in the picture. They occur because of the below mentioned reasons. These errors/warning can be ignored as they won't stop the Crawler execution.
-![error](https://github.com/chmvkalyan/ExpertSearchCrawler/blob/develop/images/error.png)
+You may face some warning or error messages in very rare cases. However, they won't interrupt the crawler execution flow. They occur because of the below mentioned reasons.
+#### Reasons
+1. File not found 404 error - Some links are bad and the crawler cannot reach the page.
+2. Error when it tries to scrape the file objects embedded/linked to the web pages.
 
-### Reasons
-1. Unicode error - this has to do with the file containing some characters that the os rejects to save
-2. File not found 404 error - Some links are bad and the crawler cannot reach the page
-3. Error when it tries to scrape the embedded file objects along with web pages.
+## Successful Execution
+
+**Screenshot depicting the Execution log of Crawler:**
+![cmd](https://github.com/chmvkalyan/ExpertSearchCrawler/blob/develop/images/Crawler_Execution_Log.jpg)
+
+
+**Screenshot depicting the Extraction of Bio-pages to Output Folder:**
+![output](https://github.com/chmvkalyan/ExpertSearchCrawler/blob/develop/images/Bio_Page_Extraction_To_OutputFolder.jpg)
+
+
+**Screenshot depicting the Faculty Directory Page URL of Stanford University in URL Tree:**
+![DirPage](https://github.com/chmvkalyan/ExpertSearchCrawler/blob/develop/images/Faculty_Directory_Page_on_URL_Tree.jpg)
+
+
+**Screenshot depicting the Faculty Bio-page URLs of Stanford University in URL Tree:**
+![BioPage](https://github.com/chmvkalyan/ExpertSearchCrawler/blob/develop/images/Faculty_Bio_Page_URLs_from_Stanford_University.jpg)
+
+
+#### Link to the URL Tree and Faculty Bio-pages Crawled from Stanford University as a sample:
+https://github.com/chmvkalyan/ExpertSearchCrawler/tree/develop/Crawled_Bio_Data
+
+
+Please contact cheerla3@illinois.edu for live demo or in case of any question. Thank you!!
