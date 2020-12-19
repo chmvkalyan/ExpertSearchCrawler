@@ -147,7 +147,9 @@ You may face some warning or error messages in very rare cases. However, they wo
 
 
 #### Link to the URL Tree and Faculty Bio-pages Crawled from Stanford University as a sample:
-https://github.com/chmvkalyan/ExpertSearchCrawler/tree/develop/Crawled_Bio_Data
+Please look into the "Crawled_Bo_Data" folder located under files/folders section above for URL Tree and extracted Faculty Bio-pages of Stanford University
+Quick Link:
+https://github.com/chmvkalyan/ExpertSearchCrawler/tree/master/Crawled_Bio_Data
 
 
 Please contact cheerla3@illinois.edu for live demo or in case of any question. Thank you!!
